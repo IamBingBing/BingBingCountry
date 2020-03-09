@@ -1,0 +1,25 @@
+name: BingBingCountry
+author: "bingbing"
+version: "1.0.0_BETA"
+api: [1.0.0, 2.0.0, 3.0.0, 3.0.1]
+main: bingbing\BingBingCountry
+
+commands:
+ 수락:
+  default: true
+ 초대:
+  default: true
+ 국가:
+  default: true
+ 국가이름설정:
+  default: true
+ 국가원:
+  default: true
+ 전쟁:
+  default: true
+ 국가워프:
+  default: true
+ 국가스폰:
+  default: true
+ 무소속:
+  default: true
