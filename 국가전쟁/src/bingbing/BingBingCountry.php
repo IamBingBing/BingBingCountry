@@ -11,7 +11,6 @@ use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\Player;
 use onebone\economyapi\EconomyAPI;
-use pocketmine\scheduler\PluginTask;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\level\particle\HeartParticle;
 use pocketmine\math\Vector3;
@@ -19,6 +18,7 @@ use pocketmine\event\player\PlayerMoveEvent;
 use pocketmine\level\Position;
 use pocketmine\block\Block;
 use pocketmine\item\Item;
+use pocketmine\scheduler\Task;
 
 
 
@@ -54,7 +54,7 @@ class BingBingCountry extends PluginBase implements Listener{
 		$this->ydb = new Config($this->getDataFolder()."ddd.yml",Config::YAML);
 		$this->y =  $this->ydb->getAll();
 		
-		$this->getServer()->getScheduler()->scheduleRepeatingTask( new task($this), 20 );
+		$this->getServer()->getScheduler()->scheduleRepeatingTask( new info($this), 20 );
 		$this->getServer()->getScheduler()->scheduleRepeatingTask( new damage($this), 60 );
 		$this->getServer()->getScheduler()->scheduleRepeatingTask( new money($this), 20*60*60*12);
 		
@@ -351,6 +351,7 @@ class BingBingCountry extends PluginBase implements Listener{
 			        if ($args[0] == $player->getName()){
 			            $this->name["player"][$player->getName()]["sosok"] = "무소속";
 			            $player->sendMessage("무소속이 되셨습니다.");
+			            return true;
 			    }
 			    }
 			}
@@ -358,7 +359,10 @@ class BingBingCountry extends PluginBase implements Listener{
 			if ($command->getName() == "국가워프"){
 			    for ($v =0; $v <3; $v++){
 			        $sender->teleport(new Vector3($warp[0], $warp[1], $warp[2] , "country"));
+			        
 			    }
+			    return true;
+			    
 			}
 			if ($command->getName() == "국가스폰"){
 			    if ($this->name["player"][$name]["sinbon"] == "king"){
@@ -368,6 +372,8 @@ class BingBingCountry extends PluginBase implements Listener{
 			        $this->list["warp"][$this->name["player"][$name]["sosok"]][2] = $sender->getFloorZ();
 			        
 			    }
+			    return true;
+			    
 			}
 		if ($command->getName() == "국가"){
 			
@@ -395,6 +401,8 @@ class BingBingCountry extends PluginBase implements Listener{
 					$sender->sendMessage("§b===============================");
 					break;
 			}
+			return true;
+			
 		}
 		if ($command->getName() == "국가이름설정"){
 			$name = $sender->getName();
@@ -424,18 +432,22 @@ class BingBingCountry extends PluginBase implements Listener{
 				    $this->name["player"][$name]["okay"] = "null";
 					array_push($this->list["country"], $args[0]);
 					$this->save();
+					return true;
 					
 				}
 			
 			
 			else if ($this->name["player"][$name]["sinbon"] !== "king"){
 				$sender->sendMessage("§b[§f국가전쟁§b]§f 당신은 왕이 아닙니다.");
+				return true;
 				
 			}
 			}
 			else if (!empty($this->country["country"][$this->name["player"][$name]["sosok"]]["countryname"])){
 				$sender->sendMessage("§b[§f국가전쟁§b]§f 이미 국가이름이 정해져 있습니다");
 			}
+			return true;
+			
 		}
 		
 		if ($command->getName() == "국가원"){
@@ -480,10 +492,14 @@ class BingBingCountry extends PluginBase implements Listener{
 							}
 						}
 						
-					    }
+					    }return true;
 					}
+					
+					
 					else {
 						$sender->sendMessage("§b[§f국가전쟁§b]§f 초대할사람을 적어주세요.");
+						return true;
+						
 						break;
 					}
 					
@@ -497,12 +513,16 @@ class BingBingCountry extends PluginBase implements Listener{
 									$n = $args[1];
 									if ($player->getName() == $n){
 									   $player->sendMessage("§b[§f국가전쟁§b]§f ".$this->name["player"][$name]["countryname"]."국가로부터 강퇴되었습니다 .");
+									   return true;
+									   
 									}
 									for ($peo = 0; $peo <= count($this->list[$this->name["player"][$name["number"]]]["peoplemax"]); $peo++){
 									    if ($n == $this->country["country"][$this->getsosok($sender)]["people"][$peo]){
 									        unset($this->country["country"][$this->getsosok($sender)]["people"][$peo]);
 											$this->name["player"][$n]["sosok"] == "무소속";
 											$this->save();
+											return true;
+											
 											break;
 										}
 									}
@@ -511,6 +531,9 @@ class BingBingCountry extends PluginBase implements Listener{
 								}
 								else if ($this->ispeople($sender,$args[1]) == "1"){
 									$sender->sendMessage("§b[§f국가전쟁§b]§f 이미 당신의 국가원이 아닙니다");
+									return true;
+									return true;
+									
 									break;
 								}
 							}
@@ -530,6 +553,8 @@ class BingBingCountry extends PluginBase implements Listener{
 						$sender->sendMessage("§b[§f국가전쟁§b]§f".$me ."국가");
 					}
 			}
+			return true;
+			
 		}
 		if($command->getName() == "수락"){
 			$c = $this->list["countries"];
@@ -544,14 +569,18 @@ class BingBingCountry extends PluginBase implements Listener{
 				    
 				   
 				    $this->name["player"][$name]["list"] = array();
-					
+				    return true;
+				    
 				    break;
 				    $this->save();
 				}
+				return true;
+				
 				
 			}
 			if ($g == "true"){
 			    $sender->sendMessage("§b[§f국가전쟁§b]§f 국가초대목록에 없는 국가이름입니다");
+			    return true;
 			    
 			}
 		}
@@ -559,21 +588,27 @@ class BingBingCountry extends PluginBase implements Listener{
 		if ($command->getName() == "전쟁")
 		{
 			if ($args[0] == "시작"){
-				
+			    return true;
+			    
 				
 				$m = "§b[§f국가전쟁§b]§f";
 				if ($this->war["fight"] == "false" and $sender->isOp()){
 					$this->getServer()->broadcastMessage($m."국가전쟁의 시작입니다.§a피터지게 싸우세요");
 					$this->getServer()->broadcastMessage($m."이제  pvp가 어디에서든지 활성화 됩니다§a피터지게 싸우세요");
+					return true;
 					
 					$this->war["fight"] = "true";
 				}
 				else{
 					$sender->sendMessage("§b[§f국가전쟁§b]§f 이미 전쟁중입니다");
+					return true;
+					
 				}
 			}
 			if ($this->war["fight"] == "true" and $sender->isOp()){
 			if ($args[0] == "종료"){
+			    return true;
+			    
 				$this->getServer()->broadcastMessage($m."국가전쟁의 종료입니다.싸움을 멈추세요");
 				$this->getServer()->broadcastMessage($m."이제  pvp가 어디에서든지 비활성화 됩니다");
 				$this->war["fight"] = "false";
@@ -581,6 +616,8 @@ class BingBingCountry extends PluginBase implements Listener{
 			
 			}
 			else {
+			    return true;
+			    
 				$sender->sendMessage("§b[§f국가전쟁§b]§f 이미 평화롭습니다");
 			}
 		}
@@ -819,7 +856,14 @@ class BingBingCountry extends PluginBase implements Listener{
 	
 }
 
-class damage extends PluginTask{
+class damage extends Task{
+    public $plugin;
+    public function __construct($plugin ){
+        $this->plugin = $plugin;
+    }
+    public function getOwner(){
+        return $this->plugin;
+    }
     public function onRun($currentTick){
         foreach( $this->getOwner()->getServer()->getOnlinePlayers() as $player ) {
             if ($this->getOwner()->damage($player->getFloorX() ,$player->getFloorZ() , $player) == "true"){
@@ -829,25 +873,33 @@ class damage extends PluginTask{
         }
     }
 }
-class money extends PluginTask{
+class money extends Task{
+    public $plugin;
+    public function __construct($plugin ){
+        $this->plugin = $plugin;
+    }
+    public function getOwner(){
+        return $this->plugin;
+    }
    public function onRun($currentTick){
        $this->getOwner()->money();
-       foreach ($this->getOwner()->getServer()->getOnlinePlayers() as $player){
-           
-        
-       }
+      
    }
 }
 namespace bingbing;
-use pocketmine\scheduler\PluginTask;
 use onebone\economyapi\EconomyAPI;
-class task extends PluginTask{
-    
+use pocketmine\scheduler\Task;
+class info extends Task{
+    public $plugin;
+    public function __construct($plugin ){
+        $this->plugin = $plugin;
+    }
+    public function getOwner(){
+        return $this->plugin;
+    }
 	
 	public function onRun(int $currentTick ) {
 		
-		$playerCount = count( $this->getOwner()->getServer()->getOnlinePlayers() );
-		$tps = ($this->getOwner()->getServer()->getTicksPerSecond())*1;
 		
 		
 		foreach( $this->getOwner()->getServer()->getOnlinePlayers() as $player ) {
